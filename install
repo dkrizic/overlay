@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# Install gopro-overlay#
+python3 -m venv venv/gopro-overlay
+./venv/gopro-overlay/bin/pip install gopro-overlay
+./venv/gopro-overlay/bin/pip install pycairo==1.23.0
+

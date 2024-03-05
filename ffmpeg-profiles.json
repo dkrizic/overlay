@@ -1,0 +1,6 @@
+{
+  "overlay-mac": {
+     "input": ["-hwaccel", "videotoolbox"],
+     "output": ["-vcodec", "h264_videotoolbox", "-q:v", "65"]
+  }
+}

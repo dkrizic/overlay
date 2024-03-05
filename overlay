@@ -1,0 +1,66 @@
+#!/bin/bash
+#
+me=$(basename $0)
+origin=$(pwd)
+dir="$1"
+
+# Case insensitive globbing
+shopt -s nocaseglob
+
+if [  -z $dir ]; then
+  echo "Usage: $me <directory>"
+  exit 1
+fi
+if [ ! -d $dir ]; then
+  echo "directory $dir does not exist"
+  exit 1
+fi
+
+(
+  echo "Working in $dir"
+  cd $dir
+  shopt -s nocaseglob
+
+  mkdir tmp
+
+  fit=$(ls *.FIT 2>/dev/null | head -1)
+  if [ -z "$fit" ]; then
+    echo "No fit file found in $dir"
+    exit 1
+  fi
+  echo "Using fit file $fit"
+
+  # Find all files named *.mp4
+  for file in *.MP4; do
+    # skip if filename contains "overlay"
+    if [[ $file == *overlay* ]]; then
+      echo "Skipping file $file"
+      continue
+    fi
+    echo "Processing file $file"
+    date=$(ffprobe $file 2>&1 | grep creation_time | head -1 | awk -F": " '{print $2}')
+    echo "Date of file is $date"
+    touch -d $date -m $file
+
+    profile=$origin/overlay.json
+    echo "Transcoding file $file to tmp/$file using profile $profile"
+    $origin/venv/gopro-overlay/bin/gopro-dashboard.py \
+      --font Arial \
+      --units-speed kph \
+      --units-altitude meter \
+      --units-temperature degC \
+      --fit $fit \
+      --use-fit-only \
+      --video-time-start file-modified \
+      --profile overlay-mac \
+      $file tmp/$file
+  done
+
+  # create a file.txt with the list of files to be processed
+  ls -1 tmp/*.MP4 > file.txt
+
+  # Merge all files using ffmpeg
+  echo "Merging file to overlay.mp4"
+  ffmpeg -f concat -safe 0 -i file.txt -c copy overlay.mp4
+)
+
