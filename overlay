@@ -48,16 +48,16 @@ fi
     touch -d $date -m $file
 
     echo "Transcoding file $file to tmp/$file"
-#    $origin/venv/gopro-overlay/bin/gopro-dashboard.py \
-#      --font Arial \
-#      --units-speed kph \
-#      --units-altitude meter \
-#      --units-temperature degC \
-#      --fit $fit \
-#      --use-fit-only \
-#      --video-time-start file-modified \
-#      --profile overlay-mac \
-#      $file tmp/$file
+    $origin/venv/gopro-overlay/bin/gopro-dashboard.py \
+      --font Arial \
+      --units-speed kph \
+      --units-altitude meter \
+      --units-temperature degC \
+      --fit $fit \
+      --use-fit-only \
+      --video-time-start file-modified \
+      --profile overlay-mac \
+      $file tmp/$file
   done
 
   # create a tmp/file.txt with the list of files to be processed
