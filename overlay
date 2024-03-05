@@ -3,6 +3,7 @@
 me=$(basename $0)
 origin=$(pwd)
 dir="$1"
+offset=40
 
 # Case insensitive globbing
 shopt -s nocaseglob
@@ -39,28 +40,35 @@ fi
     fi
     echo "Processing file $file"
     date=$(ffprobe $file 2>&1 | grep creation_time | head -1 | awk -F": " '{print $2}')
+    #timestamp=$(date -ju -f "%Y-%m-%dT%H:%M:%S" "$date" "+%s")
+    #timestamp=$((timestamp+offset))
+    #date=$(date -r "$timestamp" +"%Y-%m-%dT%H:%M:%S.000000Z")
+
     echo "Date of file is $date"
     touch -d $date -m $file
 
-    profile=$origin/overlay.json
-    echo "Transcoding file $file to tmp/$file using profile $profile"
-    $origin/venv/gopro-overlay/bin/gopro-dashboard.py \
-      --font Arial \
-      --units-speed kph \
-      --units-altitude meter \
-      --units-temperature degC \
-      --fit $fit \
-      --use-fit-only \
-      --video-time-start file-modified \
-      --profile overlay-mac \
-      $file tmp/$file
+    echo "Transcoding file $file to tmp/$file"
+#    $origin/venv/gopro-overlay/bin/gopro-dashboard.py \
+#      --font Arial \
+#      --units-speed kph \
+#      --units-altitude meter \
+#      --units-temperature degC \
+#      --fit $fit \
+#      --use-fit-only \
+#      --video-time-start file-modified \
+#      --profile overlay-mac \
+#      $file tmp/$file
   done
 
-  # create a file.txt with the list of files to be processed
-  ls -1 tmp/*.MP4 > file.txt
+  # create a tmp/file.txt with the list of files to be processed
+  > tmp/file.txt
+  for file in tmp/*.MP4; do
+    basefile=$(basename $file)
+    echo "file '$basefile'" >> tmp/file.txt
+  done
 
   # Merge all files using ffmpeg
   echo "Merging file to overlay.mp4"
-  ffmpeg -f concat -safe 0 -i file.txt -c copy overlay.mp4
+  ffmpeg -f concat -safe 0 -i tmp/file.txt -c copy overlay.mp4
 )
 
