@@ -56,6 +56,7 @@ fi
       --fit $fit \
       --use-fit-only \
       --video-time-start file-modified \
+      --exclude temperature cadence \
       --profile overlay-mac \
       $file tmp/$file
   done
@@ -70,5 +71,7 @@ fi
   # Merge all files using ffmpeg
   echo "Merging file to overlay.mp4"
   ffmpeg -f concat -safe 0 -i tmp/file.txt -c copy overlay.mp4
+
+  rm -rf tmp
 )
 
