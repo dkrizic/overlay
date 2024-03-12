@@ -3,7 +3,7 @@
 me=$(basename $0)
 origin=$(pwd)
 dir="$1"
-offset=-40
+offset=0
 
 # Case insensitive globbing
 shopt -s nocaseglob
@@ -24,7 +24,7 @@ fi
 
   mkdir tmp
 
-  fit=$(ls *.FIT 2>/dev/null | head -1)
+  fit=$(ls *.fit 2>/dev/null | head -1)
   if [ -z "$fit" ]; then
     echo "No fit file found in $dir"
     exit 1
